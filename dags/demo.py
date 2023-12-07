@@ -15,7 +15,14 @@ def file_orders():
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / f"raw_orders.csv"
     path.write_text(data.text)
+    return path.as_posix()
 
+
+@task
+def orders(file_orders_path):
+    file_orders = Path(file_orders_path)
+    num_lines = len(file_orders.read_text().splitlines())
+    return num_lines
 
 @dag(
     schedule="@daily",
@@ -27,7 +34,7 @@ def demo_dag():
     """
     a simple demo dag
     """
-    file_orders()
 
+    orders(file_orders())
 
 demo_dag()
